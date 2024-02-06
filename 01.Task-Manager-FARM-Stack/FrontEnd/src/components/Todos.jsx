@@ -8,6 +8,41 @@ const TodosContext=React.createContext({
     fetchTodos:()=>{}
 })
 
+// post route
+function AddToDo(){
+    const [item,setItem]=React.useState("")
+    const {todos,fetchTodos}=React.useContext(TodosContext)
+    const handleInput=event=>{
+        setItem(event.target.value)
+    }
+    const handleSubmit=event=>{
+        const newTodo={
+            "id":todos.length + 1,
+            "item":item
+        }
+        fetch("http://localhost:8000/todo",
+        {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify(newTodo)   
+    }).then(fetchTodos)
+    }
+return(
+    <form onSubmit={handleSubmit} >
+        <InputGroup 
+        size="md">
+            <Input 
+        pr="4.5rem"
+        type="text"
+        placeholder="Add a todo item"
+        aria-label="Add a todo item"
+        onChange={handleInput}
+        />
+        </InputGroup>
+    </form>
+)
+}
+
 export default function Todos(){
     const[todos,setTodos]=useState([])
     const fetchTodos=async()=>{
@@ -16,12 +51,15 @@ export default function Todos(){
         setTodos(todos.data)
     }
 
+
+
 useEffect(()=>{
     fetchTodos()
 },[])
 return (
-   <TodosContext.Provider value={{todos,fetchTodos}}  >
-    <Stack spacing="5">
+   <TodosContext.Provider value={{todos,fetchTodos}} >
+    <AddToDo/>
+    <Stack spacing={5}>
     {todos.map((todo)=>(
         <b>{todo.item}</b>
     ))}

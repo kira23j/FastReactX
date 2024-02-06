@@ -29,9 +29,18 @@ todos=[
         },
   {"id":"3",
      "item":"something 3"
-        },
+        }
 ]
 # get todo route
 @app.get("/todo",tags=["todos"])
 async def get_todos()->dict:
     return {"data":todos}
+
+# post route
+@app.post("/todo",tags=["todos"])
+async def add_todo(todo:dict)->dict:
+    todos.append(todo)
+    return {
+        "data":{"Todo has been added!"}
+    }
+    
