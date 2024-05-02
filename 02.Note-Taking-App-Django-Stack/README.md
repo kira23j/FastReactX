@@ -1,0 +1,1 @@
+#  A simple note taking app with react and django
