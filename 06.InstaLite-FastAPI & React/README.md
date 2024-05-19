@@ -1,0 +1,1 @@
+# InstaLite made with FastAPI and React
