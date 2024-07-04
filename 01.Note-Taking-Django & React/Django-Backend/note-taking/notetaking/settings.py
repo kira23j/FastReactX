@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
-from datatime import timedelta
+from datetime import timedelta
 from dotenv import load_dotenv
 import os
 
@@ -55,7 +55,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'api',
     'rest_framework',
-    'corsheaders'
+    # 'corsheaders'
     
 ]
 
