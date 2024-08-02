@@ -1,4 +1,4 @@
-from datetime import timedelta,datetime
+from datetime import timedelta,datetime,timezone
 from typing import Annotated
 from fastapi import APIRouter,Depends,HTTPException,status
 from pydantic import BaseModel
@@ -30,9 +30,9 @@ def authenticate_user(username:str,password:str,db):
     user=db.query(User).filter(User.username==username).first()
     if not user:
         return False
-    if not bcrypt_context.verify(password,user,hashed_password):
+    if not bcrypt_context.verify(password,user.hashed_password):
         return False
-    return True
+    return user
 
 def create_access_token(username:str,user_id:int,expires_delta:timedelta):
     encode={'sub':username,'id':user_id}
