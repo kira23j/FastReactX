@@ -1,0 +1,91 @@
+/* Overall Container */
+.login-container {
+    background: url('../assets/login.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Login Card */
+.login-card {
+    background-color: rgba(33, 33, 33, 0.8); /* Semi-transparent background */
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    width: 100%;
+    max-width: 400px;
+    position: relative;
+}
+
+/* Heading */
+h2 {
+    color: #00bcd4;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+/* Form Labels */
+.form-label {
+    color: #00bcd4;
+    font-weight: bold;
+}
+
+/* Form Inputs */
+.form-control {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #00bcd4;
+    border-radius: 6px;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.form-control:focus {
+    border-color: #00bcd4;
+    box-shadow: 0 0 0 0.2rem rgba(0, 188, 212, 0.25);
+}
+
+/* Primary Button */
+.btn-primary {
+    background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0097a7 0%, #00bcd4 100%);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Link Button */
+.btn-link {
+    color: #00bcd4;
+    border: none;
+    background: none;
+    font-size: 16px;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: color 0.3s ease;
+}
+
+.btn-link:hover {
+    color: #0097a7;
+}
+
+/* Text Center */
+.text-center {
+    text-align: center;
+}
