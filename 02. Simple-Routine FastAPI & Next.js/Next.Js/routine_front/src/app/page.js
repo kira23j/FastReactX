@@ -14,31 +14,45 @@ const Home = () => {
   const [routineName, setRoutineName] = useState('');
   const [routineDescription, setRoutineDescription] = useState('');
   const [selectedWorkouts, setSelectedWorkouts] = useState([]);
+  const [token, setToken] = useState(null);
 
-  const token = localStorage.getItem('token');
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const token = localStorage.getItem('token');
+      setToken(token);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchWorkoutsAndRoutines = async () => {
       try {
-        const token = localStorage.getItem('token'); 
-        const [workoutsResponse, routinesResponse] = await Promise.all([
-          axios.get('http://localhost:8000/workouts/workouts', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get('http://localhost:8000/routines', {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        if (token) {
+          console.log('Fetching workouts and routines with token:', token);
 
-        setWorkouts(workoutsResponse.data);
-        setRoutines(routinesResponse.data);
+          const [workoutsResponse, routinesResponse] = await Promise.all([
+            axios.get('http://localhost:8000/workouts/workouts', {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+            axios.get('http://localhost:8000/routines', {
+              headers: { Authorization: `Bearer ${token}` },
+            }),
+          ]);
+
+          console.log('Workouts response:', workoutsResponse.data);
+          console.log('Routines response:', routinesResponse.data);
+
+          setWorkouts(workoutsResponse.data);
+          setRoutines(routinesResponse.data);
+        } else {
+          console.error('No token available');
+        }
       } catch (error) {
         console.error('Failed to fetch data:', error);
       }
     };
 
     fetchWorkoutsAndRoutines();
-  }, []);
+  }, [token]);
 
   const handleCreateWorkout = async (e) => {
     e.preventDefault();
@@ -46,6 +60,8 @@ const Home = () => {
       const response = await axios.post('http://localhost:8000/workouts', {
         name: workoutName,
         description: workoutDescription,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setWorkouts([...workouts, response.data]);
       setWorkoutName('');
@@ -62,12 +78,40 @@ const Home = () => {
         name: routineName,
         description: routineDescription,
         workouts: selectedWorkouts,
+      }, {
+        headers: { Authorization: `Bearer ${token}` },
       });
       setRoutineName('');
       setRoutineDescription('');
       setSelectedWorkouts([]);
+      const routinesResponse = await axios.get('http://localhost:8000/routines', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRoutines(routinesResponse.data);
     } catch (error) {
       console.error('Failed to create routine:', error);
+    }
+  };
+
+  const handleDeleteRoutine = async (routineId) => {
+    try {
+      await axios.delete(`http://localhost:8000/routines/${routineId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setRoutines(routines.filter(routine => routine.id !== routineId));
+    } catch (error) {
+      console.error('Failed to delete routine:', error);
+    }
+  };
+
+  const handleDeleteWorkout = async (workoutId) => {
+    try {
+      await axios.delete(`http://localhost:8000/workouts/${workoutId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setWorkouts(workouts.filter(workout => workout.id !== workoutId));
+    } catch (error) {
+      console.error('Failed to delete workout:', error);
     }
   };
 
@@ -152,48 +196,78 @@ const Home = () => {
                       className="form-control"
                       id="workoutSelect"
                       value={selectedWorkouts}
-                      onChange={(e) => setSelectedWorkouts([...e.target.selectedOptions].map(option => option.value))}
-                    >
-                      {workouts.map(workout => (
-                        <option key={workout.id} value={workout.id}>
-                          {workout.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <button type="submit" className="btn btn-primary">Create Routine</button>
-                </form>
+                     onChange={(e) => setSelectedWorkouts([...e.target.selectedOptions].map(option => option.value))}
+                      >
+                        {workouts.map(workout => (
+                          <option key={workout.id} value={workout.id}>
+                            {workout.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <button type="submit" className="btn btn-primary">Create Routine</button>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
+  
+          <div>
+            <h3>Your Workouts:</h3>
+            <ul>
+              {workouts.length === 0 ? (
+                <li>No workouts found.</li>
+              ) : (
+                workouts.map(workout => (
+                  <div className="card" key={workout.id}>
+                    <div className="card-body">
+                      <h5 className="card-title">{workout.name}</h5>
+                      <p className="card-text">{workout.description}</p>
+                      <button onClick={() => handleDeleteWorkout(workout.id)} className="btn btn-danger">
+                        Delete Workout
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ul>
+          </div>
+  
+          <div>
+            <h3>Your Routines:</h3>
+            <ul>
+              {routines.length === 0 ? (
+                <li>No routines found.</li>
+              ) : (
+                routines.map(routine => (
+                  <div className="card" key={routine.id}>
+                    <div className="card-body">
+                      <h5 className="card-title">{routine.name}</h5>
+                      <p className="card-text">{routine.description}</p>
+                      <ul className="card-text">
+                        {routine.workouts && routine.workouts.length > 0 ? (
+                          routine.workouts.map(workout => (
+                            <li key={workout.id}>
+                              {workout.name}: {workout.description}
+                            </li>
+                          ))
+                        ) : (
+                          <li>No workouts in this routine.</li>
+                        )}
+                      </ul>
+                      <button onClick={() => handleDeleteRoutine(routine.id)} className="btn btn-danger">
+                        Delete Routine
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </ul>
+          </div>
         </div>
-
-        <div>
-          <h3>Your routines:</h3>
-          
-          <ul>
-          {routines.map(routine => (
-              <div className="card" key={routine.id}>
-                <div className="card-body">
-                <h5 className="card-title">{routine.name}</h5>
-                <p className="card-text">{routine.description}</p>
-                <ul className="card-text"> 
-                  {routine.workouts && routine.workouts.map(workout => (
-                    <li key={workout.id}>
-                      {workout.name}: {workout.description}
-                    </li>
-                  ))}
-                </ul>
-                
-                </div>
-              </div>
-            ))}
-
-          </ul>
-        </div>
-      </div>
-    </ProtectedRoute>
-  );
-};
-
-export default Home;
+      </ProtectedRoute>
+    );
+  };
+  
+  export default Home;
+  
