@@ -14,7 +14,7 @@ import {
     ModalOverlay,
     Stack,
     Text,
-    UseDisclosure,
+    useDisclosure,
 } from "@chakra-ui/react";
 
 const TodosContext = React.createContext({
