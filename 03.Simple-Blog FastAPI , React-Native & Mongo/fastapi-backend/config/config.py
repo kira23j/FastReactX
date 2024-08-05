@@ -6,7 +6,8 @@ uri = "mongodb+srv://kira23j:mongo12345@kira23j.0o080tp.mongodb.net/?retryWrites
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
-
+db=client.blogging
+blogs_collection=db["blogs"]
 # Send a ping to confirm a successful connection
 try:
     client.admin.command('ping')
